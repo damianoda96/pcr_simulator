@@ -95,14 +95,14 @@ print(getTaqFallOff())
 counter = 0
 while counter != cycles:    # Just a test to fill queue
     if counter % 2 == 0:
-        if not(workQueue.empty()):
+        if not workQueue.empty():
             r = getTaqFallOff()
             y = workQueue.get()
             z = y[:r]
             doneQueue.put(y)
             doneQueue.put(z)
     if counter % 2 == 1:
-        if not(doneQueue.empty()):
+        if not doneQueue.empty():
             r = getTaqFallOff()
             y = doneQueue.get()
             z = y[:r]
