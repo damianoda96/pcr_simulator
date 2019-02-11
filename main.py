@@ -59,6 +59,28 @@ class DNA:
         for i in range(self.length):
             self.helix.append(self.make_pair(self.strand_0[i], self.strand_1[i]))
 
+# -------------------- PCI PROCESS ---------------------------------
+
+
+def pci(cycles):
+
+    for i in range(cycles):  # for however many cycles needed, run the process
+        denaturize()
+        anneal()
+        elongate()
+
+
+def denaturize():
+    pass
+
+
+def anneal():
+    pass
+
+
+def elongate():
+    pass
+
 
 # ---------------- MAIN --------------------
 
@@ -71,6 +93,7 @@ def main():
     p = 20  # forward and backward primers
     d = 200
     e = 50
+    cycles = 10
 
     r = random.randint(-e, e)
 
