@@ -3,54 +3,51 @@ import random
 
 # ----------------- DNA --------------------
 
+
 class DNA:
 
     # Class for DNA segments
 
-    def __init__(self, len):
-        self.len = len
-        self.strand_0 = self.gen_strand(len)
-        self.strand_1 = self.gen_strand(len)
-        self.struct = self.build_struct()
+    def __init__(self, length):
+        self.helix = []
+        self.length = length
+        self.strand_0 = self.gen_strand(length)
+        self.strand_1 = self.gen_strand(length)
+        self.fix_strand()  # turns pairs to match rule A - T and C - G
+        self.build_helix()  # combine strands into the DNA structure.
 
     @staticmethod
-    def gen_strand(len):
-        # Randomly generate a strand of DNA\
+    def gen_strand(length):
+        # Randomly generate a strand of DNA
         compounds = ['a', 't', 'c', 'g']
         strand = []
-        # codon = []
 
-        # make pairs of three
-        counter = 0
-
-        # Figure this issue out, needs 3 per pair, not 2
-
-        for i in range(len):
+        for i in range(length):
 
             c = random.choice(compounds)
-            # codon.append(c)
-            # counter += 1
 
             strand.append(c)
 
-            # if counter == 3 and i < len:
-                # counter = 0
-                # strand.append(codon)
-                # codon.clear()
-
         return strand
+
+    def fix_strand(self): # Manipulating to agree with (A-T, C-G)
+        for i in range(self.length):
+            if self.strand_0[i] == 'a' and self.strand_1[i] != 't':
+                self.strand_1[i] = 't'
+            if self.strand_0[i] == 't' and self.strand_1[i] != 'a':
+                self.strand_1[i] = 'a'
+            if self.strand_0[i] == 'c' and self.strand_1[i] != 'g':
+                self.strand_1[i] = 'g'
+            if self.strand_0[i] == 'g' and self.strand_1[i] != 'c':
+                self.strand_1[i] = 'c'
 
     def print_pairs(self):
         # Prints the dna strand in pairs of three
-        for i in range(self.len):
-            print(self.strand_0[i], " - ", self.strand_1[i])
-
-        # print(self.strand_0)
-        # print(self.strand_1)
+        for i in range(self.length):
+            print(self.helix[i])
 
     def strand_to_proteins(self):
         # Converts the codon strand to corresponding proteins
-
         pass
 
     @staticmethod
@@ -58,16 +55,9 @@ class DNA:
         pair = [a, b]
         return pair
 
-    def build_struct(self):
-        struct = []
-
-        s_0 = self.strand_0
-        s_1 = self.strand_1
-
-        for i in range(self.len):
-            struct.append(self.make_pair(s_0[i], s_1[i]))
-
-        return struct
+    def build_helix(self):
+        for i in range(self.length):
+            self.helix.append(self.make_pair(self.strand_0[i], self.strand_1[i]))
 
 
 # ---------------- MAIN --------------------
@@ -76,9 +66,9 @@ def main():
 
     # Some starter stuff
 
-    base_pairs = 2000
-    m = 200
-    p = 20
+    base_pairs = 2000  # size of dna strand
+    m = 200  # multiply dna size by m
+    p = 20  # forward and backward primers
     d = 200
     e = 50
 
@@ -90,10 +80,8 @@ def main():
 
     dna = DNA(base_pairs)
 
-    # dna.print_pairs()
+    dna.print_pairs()
 
-    print(dna.struct)
 
-# Run the program
-main()
+main()  # Run the program
 
