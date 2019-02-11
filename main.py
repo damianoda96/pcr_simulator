@@ -65,12 +65,16 @@ class DNA:
 def pcr(dna, cycles):
 
     for i in range(cycles):  # for however many cycles needed, run the process
+
         denaturize()
         anneal()
         elongate()
 
 
 def denaturize():
+
+    # Melt helix down to single strand
+
     pass
 
 
@@ -90,10 +94,10 @@ def main():
 
     base_pairs = 2000  # size of dna strand
     m = 200  # multiply dna size by m
-    p = 20  # forward and backward primers
+    p = 20  # number of forward and backward primers
     d = 200
     e = 50
-    cycles = 10
+    cycles = 10  # how many cycles we want to run
 
     r = random.randint(-e, e)
 
@@ -101,11 +105,11 @@ def main():
 
     print("Processivity: ", processivity)
 
-    dna = DNA(base_pairs)
+    dna = DNA(base_pairs)  # see above class definition
 
-    dna.print_pairs()
+    dna.print_pairs()  # prints all base pairs to screen
 
-    pcr(dna, cycles)
+    pcr(dna, cycles)  # calls the pcr cycle
 
 
 main()  # Run the program
