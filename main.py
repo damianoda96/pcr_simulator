@@ -62,7 +62,7 @@ class DNA:
 # -------------------- PCI PROCESS ---------------------------------
 
 
-def pci(cycles):
+def pcr(cycles):
 
     for i in range(cycles):  # for however many cycles needed, run the process
         denaturize()
@@ -104,6 +104,8 @@ def main():
     dna = DNA(base_pairs)
 
     dna.print_pairs()
+
+    pcr(cycles)
 
 
 main()  # Run the program
