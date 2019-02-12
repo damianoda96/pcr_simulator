@@ -31,6 +31,18 @@ while loop:
 
 print(genomeString)
 print("The length of your genome is:", len(genomeString))
+if len(genomeString) > 250:
+    print("""\nWARNING! the fall off rate is set for a range between [150, 250]. 
+Please know that per ThermoFisher's DreamTaq specifications, sequences
+longer than 7.5 kb should not be used with this simulation. 
+***********************************************************************
+
+Please enter a new base value for fall-off-rate.
+""")
+    newBaseValueFallOff = input('--> ')
+
+# new logic should be added to adjust fall off rate
+
 loop = True
 while loop:
     yesNo = input('Is this correct? --> ')
