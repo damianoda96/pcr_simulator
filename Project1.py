@@ -70,7 +70,9 @@ while loop:
         
     else:
         print('Are you sure? ')
-        input('--> ')
+        ans = input('--> ')
+        if ans == 'y':
+            loop = False
 
 os.system('clear')
 print('How many cycles? ', end = '')
@@ -85,7 +87,13 @@ print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
 # Create control statement here
+
+# Preprocessing of genomeString
+genomeString = genomeString.replace('\n', '')
+genomeString = genomeString.replace('\t', '')
 genomeString = genomeString[int(regionBegin):]
+
+# Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
 doneQueue = collections.deque() #(2 ** int(cycles))
 #workQueue.append(genomeString)
