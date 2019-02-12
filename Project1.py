@@ -85,7 +85,7 @@ print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
 # Create control statement here
-
+genomeString = genomeString[int(regionBegin):]
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
 doneQueue = collections.deque() #(2 ** int(cycles))
 #workQueue.append(genomeString)
@@ -95,14 +95,14 @@ print(getTaqFallOff())
 counter = 0
 while counter != int(cycles):    # Just a test to fill queue
     if counter % 2 == 0:
-        if len(workQueue) != 0:
+        while len(workQueue) != 0:
             r = getTaqFallOff()
             y = workQueue.popleft()
             z = y[:r]
             doneQueue.append(y)
             doneQueue.append(z)
     if counter % 2 == 1:
-        if len(doneQueue) != 0:
+        while len(doneQueue) != 0:
             r = getTaqFallOff()
             y = doneQueue.popleft()
             z = y[:r]
