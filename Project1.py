@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import multiprocessing
-import queue
+import collections
 import time
 import os
 import random
@@ -86,35 +86,33 @@ print('\nIs this acceptable?')
 input('--> ')
 # Create control statement here
 
-workQueue = queue.Queue(2 ** int(cycles))
-doneQueue = queue.Queue(2 ** int(cycles))
-workQueue.put(genomeString)
+workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
+doneQueue = collections.deque() #(2 ** int(cycles))
+#workQueue.append(genomeString)
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 print(getTaqFallOff())
 counter = 0
-while counter != cycles:    # Just a test to fill queue
+while counter != int(cycles):    # Just a test to fill queue
     if counter % 2 == 0:
-        if not(workQueue.empty()):
+        if len(workQueue) != 0:
             r = getTaqFallOff()
-            y = workQueue.get()
+            y = workQueue.popleft()
             z = y[:r]
-            doneQueue.put(y)
-            doneQueue.put(z)
+            doneQueue.append(y)
+            doneQueue.append(z)
     if counter % 2 == 1:
-        if not(doneQueue.empty()):
+        if len(doneQueue) != 0:
             r = getTaqFallOff()
-            y = doneQueue.get()
+            y = doneQueue.popleft()
             z = y[:r]
-            workQueue.put(y)
-            workQueue.put(z)
+            workQueue.append(y)
+            workQueue.append(z)
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
-for i in workQueue:
-    print(workQueue[i])
-for i in doneQueue:
-    print(doneQueue[i])
+print(workQueue)
+print(doneQueue)
 
 # I'm thinking have a start queue, duplicate the string and place in done queue
 # then restart the cycle switching queues
