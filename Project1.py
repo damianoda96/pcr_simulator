@@ -85,8 +85,11 @@ while loop:
         ans = input('--> ')
         if ans == 'y':
             loop = False
+            
+primer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
 
 os.system('clear')
+print(primer)
 print('How many cycles? ', end = '')
 cycles = input('--> ')
 
@@ -131,11 +134,9 @@ while counter != int(cycles):    # Just a test to fill queue
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
-print(workQueue)
-print(doneQueue)
+print(workQueue)   # debugging
+print(doneQueue)   # debugging
 
-# I'm thinking have a start queue, duplicate the string and place in done queue
-# then restart the cycle switching queues
 #def oneCycle():
 # if even, work queue -> done queue, if odd, done queue -> work queue
 
