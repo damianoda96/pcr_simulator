@@ -95,7 +95,11 @@ while loop:
         if ans == 'y':
             loop = False
             
-primer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
+
+if len(genomeString) < 21:
+    primer = genomeString[:len(genomeString)]
+else:
+    primer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
 
 os.system(clear)
 print(primer)
@@ -106,7 +110,7 @@ cycles = input('--> ')
 os.system(clear)
 print('The file you are using is: ', file)
 print('The beginning region is:   ', regionBegin, genomeString[int(regionBegin) - 1])
-print('The ending region is:      ', regionEnd, genomeString[int(regionEnd)])
+print('The ending region is:      ', regionEnd, genomeString[int(regionEnd) - 1])
 print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
@@ -115,7 +119,7 @@ input('--> ')
 # Preprocessing of genomeString
 genomeString = genomeString.replace('\n', '')
 genomeString = genomeString.replace('\t', '')
-genomeString = genomeString[int(regionBegin):]
+genomeString = genomeString[int(regionBegin) - 1:]
 
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
@@ -124,9 +128,11 @@ doneQueue = collections.deque() #(2 ** int(cycles))
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 print(getTaqFallOff())
+print(primer)
+print(workQueue)
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
-    if counter % 2 == 0:
+    if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
             r = getTaqFallOff()
             y = workQueue.popleft()
