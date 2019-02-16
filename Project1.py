@@ -12,7 +12,14 @@ def getTaqFallOff(f=200):
 	randomFallOff = random.randint(-50,50)
 	return FIXED_FALL_OFF_CONSTANT + randomFallOff
 
-os.system('clear')
+def getOS():
+    if os.name == 'nt':
+        return 'cls'
+    else:
+        return 'clear'
+
+clear = getOS()
+os.system(clear)
 print(os.getcwd())
 print('Please enter the file path: ', end = '')
 loop = True
@@ -31,15 +38,17 @@ while loop:
 
 print(genomeString)
 print("The length of your genome is:", len(genomeString))
-if len(genomeString) > 250:
-    print("""\nWARNING! the fall off rate is set for a range between [150, 250]. 
-Please know that per ThermoFisher's DreamTaq specifications, sequences
-longer than 7.5 kb should not be used with this simulation. 
-***********************************************************************
-
-Please enter a new base value for fall-off-rate.
-""")
-    newBaseValueFallOff = input('--> ')
+# assignment assumes 200 is default value for amplification, option to adjust
+# could be added.
+#if len(genomeString) > 250:
+#    print("""\nWARNING! the fall off rate is set for a range between [150, 250]. 
+#Please know that per ThermoFisher's DreamTaq specifications, sequences
+#longer than 7.5 kb should not be used with this simulation. 
+#***********************************************************************
+#
+#Please enter a new base value for fall-off-rate The default is 200.
+#""")
+#    newBaseValueFallOff = input('--> ')
 
 # new logic should be added to adjust fall off rate
 
@@ -53,11 +62,11 @@ while loop:
     else:
         print("Please try \"y\" or \"n\"")
 
-os.system('clear')
+os.system(clear)
 
 loop = True
 while loop:
-    print('What region would you like to be copied? Please enter region beginning,\nthen region ending:')
+    print('What region would you like to be copied? Please enter region beginning,\nthen region ending. The first 20 bases will automatically be set for the primers.')
     regionBegin = input('--> ')
     regionEnd = input('--> ')
     if int(regionEnd) - int(regionBegin) < 200:
@@ -88,13 +97,13 @@ while loop:
             
 primer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
 
-os.system('clear')
+os.system(clear)
 print(primer)
 print('How many cycles? ', end = '')
 cycles = input('--> ')
 
 # Summary
-os.system('clear')
+os.system(clear)
 print('The file you are using is: ', file)
 print('The beginning region is:   ', regionBegin, genomeString[int(regionBegin) - 1])
 print('The ending region is:      ', regionEnd, genomeString[int(regionEnd)])
@@ -116,7 +125,7 @@ PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 print(getTaqFallOff())
 counter = 0
-while counter != int(cycles):    # Just a test to fill queue
+while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:
         while len(workQueue) != 0:
             r = getTaqFallOff()
