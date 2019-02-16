@@ -18,6 +18,38 @@ def getOS():
     else:
         return 'clear'
 
+def LCSubStr(X, Y, m, n): 
+      
+    # Create a table to store lengths of 
+    # longest common suffixes of substrings.  
+    # Note that LCSuff[i][j] contains the  
+    # length of longest common suffix of  
+    # X[0...i-1] and Y[0...j-1]. The first 
+    # row and first column entries have no 
+    # logical meaning, they are used only 
+    # for simplicity of the program. 
+      
+    # LCSuff is the table with zero  
+    # value initially in each cell 
+    LCSuff = [[0 for k in range(n+1)] for l in range(m+1)] 
+      
+    # To store the length of  
+    # longest common substring 
+    result = 0 
+  
+    # Following steps to build 
+    # LCSuff[m+1][n+1] in bottom up fashion 
+    for i in range(m + 1): 
+        for j in range(n + 1): 
+            if (i == 0 or j == 0): 
+                LCSuff[i][j] = 0
+            elif (X[i-1] == Y[j-1]): 
+                LCSuff[i][j] = LCSuff[i-1][j-1] + 1
+                result = max(result, LCSuff[i][j]) 
+            else: 
+                LCSuff[i][j] = 0
+    return result
+
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -66,13 +98,15 @@ os.system(clear)
 
 loop = True
 while loop:
-    print('What region would you like to be copied? Please enter region beginning,\nthen region ending. The first 20 bases will automatically be set for the primers.')
+    print('What region would you like to be copied? The first 20 bases will automatically'
+    + ' be set for the primers. Please enter region beginning.')
     regionBegin = input('--> ')
-    regionEnd = input('--> ')
-    if int(regionEnd) - int(regionBegin) < 200:
+    print('How many bases would you like amplified? The default is 200.')
+    regionLength = input('--> ')
+    if int(regionLength) < 200:
         #print out region in easy format
         try:
-            for i in range(int(regionBegin) - 1, int(regionEnd), 1):
+            for i in range(int(regionBegin) - 1, int(regionLength) + int(regionBegin), 1):
                 #print(i)
                 print(genomeString[i], end = '')
             print('\n')
@@ -97,20 +131,25 @@ while loop:
             
 
 if len(genomeString) < 21:
-    primer = genomeString[:len(genomeString)]
+    forwardPrimer = genomeString[:len(genomeString)]
+    backwardPrimer = genomeString[:len(genomeString)]
 else:
-    primer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
+    forwardPrimer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
+    backwardPrimer = genomeString[int(regionBegin) + int(regionLength) - 21:int(regionBegin) + int(regionLength) - 1]
+
+1-71, 72-142, 143
 
 os.system(clear)
-print(primer)
+print(forwardPrimer)
+print(backwardPrimer)
 print('How many cycles? ', end = '')
 cycles = input('--> ')
 
 # Summary
-os.system(clear)
+#os.system(clear)
 print('The file you are using is: ', file)
 print('The beginning region is:   ', regionBegin, genomeString[int(regionBegin) - 1])
-print('The ending region is:      ', regionEnd, genomeString[int(regionEnd) - 1])
+print('The region length is:      ', regionLength, genomeString[int(regionBegin) + int(regionLength) - 2])
 print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
@@ -128,24 +167,31 @@ doneQueue = collections.deque() #(2 ** int(cycles))
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 print(getTaqFallOff())
-print(primer)
-print(workQueue)
+
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
-            r = getTaqFallOff()
             y = workQueue.popleft()
-            z = y[:r]
-            doneQueue.append(y)
-            doneQueue.append(z)
+            if LCSubStr(forwardPrimer, y, len(forwardPrimer), len(y)) > 10:
+                r = 175 #getTaqFallOff()
+                #y = workQueue.popleft()
+                z = y[:r]
+                doneQueue.append(y)
+                doneQueue.append(z)
+            else:
+                doneQueue.append(y)
     if counter % 2 == 1:
         while len(doneQueue) != 0:
-            r = getTaqFallOff()
             y = doneQueue.popleft()
-            z = y[:r]
-            workQueue.append(y)
-            workQueue.append(z)
+            if LCSubStr(forewardPrimer, y, len(forewardPrimer), len(y)) > 10:
+                r = 175 #getTaqFallOff()
+                #y = doneQueue.popleft()
+                z = y[:r]
+                workQueue.append(y)
+                workQueue.append(z)
+            else:
+                workQueue.append(y)
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
