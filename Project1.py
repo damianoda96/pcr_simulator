@@ -158,15 +158,16 @@ input('--> ')
 # Preprocessing of genomeString
 genomeString = genomeString.replace('\n', '')
 genomeString = genomeString.replace('\t', '')
-genomeString = genomeString[int(regionBegin) - 1:]
+#genomeString = genomeString[int(regionBegin) - 1:]
 
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
 doneQueue = collections.deque() #(2 ** int(cycles))
-#workQueue.append(genomeString)
+workQueue.append(genomeString)
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 print(getTaqFallOff())
+print(workQueue)
 
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
