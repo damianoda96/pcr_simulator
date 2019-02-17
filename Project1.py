@@ -5,6 +5,7 @@ import collections
 import time
 import os
 import random
+from difflib import SequenceMatcher
 
 # default value for taq fall off is 200
 def getTaqFallOff(f=200):
@@ -18,8 +19,9 @@ def getOS():
     else:
         return 'clear'
 
-def LCSubStr(X, Y, m, n): 
-      
+def LCSubStr(X, Y): 
+    m = len(X)
+    n = len(Y)
     # Create a table to store lengths of 
     # longest common suffixes of substrings.  
     # Note that LCSuff[i][j] contains the  
@@ -49,6 +51,22 @@ def LCSubStr(X, Y, m, n):
             else: 
                 LCSuff[i][j] = 0
     return result
+
+def longestSubstring(str1,str2): 
+  
+     # initialize SequenceMatcher object with  
+     # input string 
+     seqMatch = SequenceMatcher(None,str1,str2) 
+  
+     # find match of longest sub-string 
+     # output will be like Match(a=0, b=0, size=5) 
+     match = seqMatch.find_longest_match(0, len(str1), 0, len(str2)) 
+  
+     # print longest substring 
+     if (match.size!=0): 
+          print (str1[match.a: match.a + match.size])  
+     else: 
+          print ('No longest common sub-string found')
 
 clear = getOS()
 os.system(clear)
@@ -140,8 +158,6 @@ else:
 1-71, 72-142, 143
 
 os.system(clear)
-print(forwardPrimer)
-print(backwardPrimer)
 print('How many cycles? ', end = '')
 cycles = input('--> ')
 
@@ -166,26 +182,46 @@ doneQueue = collections.deque() #(2 ** int(cycles))
 workQueue.append(genomeString)
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
-print(getTaqFallOff())
-print(workQueue)
+#print(getTaqFallOff())
+print(forwardPrimer)
+print(backwardPrimer)
+#print(workQueue)     # Debugging
+print(LCSubStr(forwardPrimer, genomeString))
+print(LCSubStr(backwardPrimer, genomeString))
 
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
-            y = workQueue.popleft()
-            if LCSubStr(forwardPrimer, y, len(forwardPrimer), len(y)) > 10:
-                r = 175 #getTaqFallOff()
+            w = workQueue.popleft()
+            lw = LCSubStr(forwardPrimer, w)
+            x = workQueue.popleft()
+            lx = LCSubStr(backwardPrimer, x)
+            if lw >= 10:
+                pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
+                print(pos)
+                r = 200 #getTaqFallOff()
                 #y = workQueue.popleft()
-                z = y[:r]
+                y = w[pos:r + pos - 2]
+                doneQueue.append(w)
                 doneQueue.append(y)
+            else:
+                doneQueue.append(w)
+            if lx >= 10:
+                pos = x.find(backwardPrimer)
+                pos = pos + lx
+                print(pos)
+                r = 200 #getTaqFallOff()
+                z = x[pos - (r + 1):pos]
+                doneQueue.append(x)
                 doneQueue.append(z)
             else:
-                doneQueue.append(y)
+                doneQueue.append(x)
     if counter % 2 == 1:
         while len(doneQueue) != 0:
             y = doneQueue.popleft()
-            if LCSubStr(forewardPrimer, y, len(forewardPrimer), len(y)) > 10:
+            l = LCSubStr(forwardPrimer, y)
+            if l > 10:
                 r = 175 #getTaqFallOff()
                 #y = doneQueue.popleft()
                 z = y[:r]
