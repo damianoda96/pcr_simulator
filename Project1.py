@@ -232,13 +232,18 @@ while counter != int(cycles):    # This will run as many times as cycles
 
 file = os.getcwd()
 file = file + '\log.txt'
+file2 = file + 't'
 print(file)
 f = open(file, 'w')
+f2 = open(file2, 'w')
 for i in workQueue:
     f.write(str(i))
     f.write('\n\n')
+for i in doneQueue:
+    f2.write(str(i))
+    f2.write('\n\n')
 f.close()
-    
+f2.close()
 
 #def oneCycle():
 # if even, work queue -> done queue, if odd, done queue -> work queue
