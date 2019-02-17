@@ -5,7 +5,6 @@ import collections
 import time
 import os
 import random
-from difflib import SequenceMatcher
 
 # default value for taq fall off is 200
 def getTaqFallOff(f=200):
@@ -51,22 +50,6 @@ def LCSubStr(X, Y):
             else: 
                 LCSuff[i][j] = 0
     return result
-
-def longestSubstring(str1,str2): 
-  
-     # initialize SequenceMatcher object with  
-     # input string 
-     seqMatch = SequenceMatcher(None,str1,str2) 
-  
-     # find match of longest sub-string 
-     # output will be like Match(a=0, b=0, size=5) 
-     match = seqMatch.find_longest_match(0, len(str1), 0, len(str2)) 
-  
-     # print longest substring 
-     if (match.size!=0): 
-          print (str1[match.a: match.a + match.size])  
-     else: 
-          print ('No longest common sub-string found')
 
 clear = getOS()
 os.system(clear)
@@ -153,9 +136,7 @@ if len(genomeString) < 21:
     backwardPrimer = genomeString[:len(genomeString)]
 else:
     forwardPrimer = genomeString[(int(regionBegin) - 1):(int(regionBegin) + 19)]
-    backwardPrimer = genomeString[int(regionBegin) + int(regionLength) - 21:int(regionBegin) + int(regionLength) - 1]
-
-1-71, 72-142, 143
+    backwardPrimer = genomeString[int(regionBegin) + int(regionLength) - 19:int(regionBegin) + int(regionLength) + 1]
 
 os.system(clear)
 print('How many cycles? ', end = '')
@@ -199,10 +180,10 @@ while counter != int(cycles):    # This will run as many times as cycles
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
-                print(pos)
+                print('Forward Primer pos: ' + str(pos))
                 r = 200 #getTaqFallOff()
                 #y = workQueue.popleft()
-                y = w[pos:r + pos - 2]
+                y = w[pos:r + pos]
                 doneQueue.append(w)
                 doneQueue.append(y)
             else:
@@ -210,30 +191,54 @@ while counter != int(cycles):    # This will run as many times as cycles
             if lx >= 10:
                 pos = x.find(backwardPrimer)
                 pos = pos + lx
-                print(pos)
+                print('Backward Primer pos: ' + str(pos))
                 r = 200 #getTaqFallOff()
-                z = x[pos - (r + 1):pos]
+                z = x[pos - (r):pos]
                 doneQueue.append(x)
                 doneQueue.append(z)
             else:
                 doneQueue.append(x)
     if counter % 2 == 1:
         while len(doneQueue) != 0:
-            y = doneQueue.popleft()
-            l = LCSubStr(forwardPrimer, y)
-            if l > 10:
-                r = 175 #getTaqFallOff()
-                #y = doneQueue.popleft()
-                z = y[:r]
+            w = doneQueue.popleft()
+            lw = LCSubStr(forwardPrimer, w)
+            x = doneQueue.popleft()
+            lx = LCSubStr(backwardPrimer, x)
+            if lw >= 10:
+                pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
+                print('Forward Primer pos: ' + str(pos))
+                r = 200 #getTaqFallOff()
+                #y = workQueue.popleft()
+                y = w[pos:r + pos]
+                workQueue.append(w)
                 workQueue.append(y)
+            else:
+                workQueue.append(w)
+            if lx >= 10:
+                pos = x.find(backwardPrimer)
+                pos = pos + lx
+                print('Backward Primer pos: ' + str(pos))
+                r = 200 #getTaqFallOff()
+                z = x[pos - (r):pos]
+                workQueue.append(x)
                 workQueue.append(z)
             else:
-                workQueue.append(y)
+                workQueue.append(x)
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
-print(workQueue)   # debugging
-print(doneQueue)   # debugging
+#print(workQueue)   # debugging
+#print(doneQueue)   # debugging
+
+file = os.getcwd()
+file = file + '\log.txt'
+print(file)
+f = open(file, 'w')
+for i in workQueue:
+    f.write(str(i))
+    f.write('\n\n')
+f.close()
+    
 
 #def oneCycle():
 # if even, work queue -> done queue, if odd, done queue -> work queue
