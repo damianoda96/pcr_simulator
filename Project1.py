@@ -191,6 +191,7 @@ while counter != int(cycles):    # This will run as many times as cycles
                 doneQueue.append(y)
             else:
                 doneQueue.append(w)
+                print('Forward Primer could not bind.')
             if lx >= 10:
                 pos = x.find(backwardPrimer)
                 pos = pos + lx
@@ -205,6 +206,7 @@ while counter != int(cycles):    # This will run as many times as cycles
                 doneQueue.append(z)
             else:
                 doneQueue.append(x)
+                print('Backward Primer could not bind.')
     if counter % 2 == 1:
         while len(doneQueue) != 0:
             w = doneQueue.popleft()
@@ -224,6 +226,7 @@ while counter != int(cycles):    # This will run as many times as cycles
                 workQueue.append(y)
             else:
                 workQueue.append(w)
+                print('Forward Primer could not bind.')
             if lx >= 10:
                 pos = x.find(backwardPrimer)
                 pos = pos + lx
@@ -238,6 +241,7 @@ while counter != int(cycles):    # This will run as many times as cycles
                 workQueue.append(z)
             else:
                 workQueue.append(x)
+                print('Backward Primer could not bind.')
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
