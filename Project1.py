@@ -74,7 +74,7 @@ def print_dist(frag_lens): # for outputting distribution of dna fragments
     nums = [0, 0, 0]
 
     for i in frag_lens:
-        if i >= 0 and i <= 100:
+        if i > 0 and i <= 100:
             nums[0] += 1
         if i > 100 and i <= 200:
             nums[1] += 1
@@ -229,6 +229,10 @@ input('--> ')
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
 doneQueue = collections.deque() #(2 ** int(cycles))
 workQueue.append(genomeString)
+# Load freq_lens with len of first two sequences
+frag_lens.append(len(genomeString))
+frag_lens.append(len(genomeString))
+
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
 #print(getTaqFallOff())  # Debugging
@@ -245,8 +249,12 @@ while counter != int(cycles):    # This will run as many times as cycles
 
             #frag_lens.append(len(workQueue))
             w = workQueue.popleft()
+            frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = workQueue.popleft()
+            val = frag_lens.index(len(x))
+            if val:
+            	frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -291,8 +299,10 @@ while counter != int(cycles):    # This will run as many times as cycles
         while len(doneQueue) != 0:
             frag_lens.append(len(doneQueue))
             w = doneQueue.popleft()
+            frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = doneQueue.popleft()
+            frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -341,7 +351,7 @@ while counter != int(cycles):    # This will run as many times as cycles
 print('Num of no copies: ' + str(noCopies))
 print('Num of copies: ' + str(2 ** int(cycles) * 2 - noCopies))
 
-print('Num of fragments: ' + str(noCopies + (2 ** int(cycles) * 2 - noCopies)))
+print('Num of fragments: ' + str(2 ** int(cycles) * 2 - noCopies))
 print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
 
 print_dist(frag_lens)
