@@ -129,7 +129,7 @@ while loop:
     else:
         print('Are you sure? ')
         ans = input('--> ')
-        if ans == 'y':
+        if ans.lower() == 'y' or ans.lower() == 'yes':
             loop = False
             
 
