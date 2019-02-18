@@ -51,6 +51,21 @@ def LCSubStr(X, Y):
                 LCSuff[i][j] = 0
     return result
 
+def preprocess(genomeString):
+    # Preprocessing of genomeString
+    # Additonal proprocessing for flexibility in input types
+    for i in range(len(genomeString)):  # for numbered columns
+        if genomeString[i].isdigit():
+            genomeString = genomeString.replace(genomeString[i], ' ')
+    genomeString = genomeString.replace('\n', '')
+    genomeString = genomeString.replace('\t', '')
+    genomeString = genomeString.replace(' ', '')
+    genomeString = genomeString.upper() # if lowercase, make uppercase
+    #genomeString = genomeString[int(regionBegin) - 1:]
+
+    return genomeString
+
+
 # Statistics
 noCopies = 0
 clear = getOS()
@@ -70,6 +85,10 @@ while loop:
             loop = False
         except:
             print("Try entering the entire file path. ", end = '')
+
+# preprocessing for genome string:
+
+genomeString = preprocess(genomeString)
 
 print(genomeString)
 print("The length of your genome is:", len(genomeString))
@@ -152,12 +171,9 @@ print('The region length is:      ', regionLength, genomeString[int(regionBegin)
 print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
-# Create control statement here
 
-# Preprocessing of genomeString
-genomeString = genomeString.replace('\n', '')
-genomeString = genomeString.replace('\t', '')
-#genomeString = genomeString[int(regionBegin) - 1:]
+# TODO:: Create control statement here
+
 
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
