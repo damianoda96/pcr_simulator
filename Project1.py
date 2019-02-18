@@ -107,8 +107,10 @@ def preprocess(genomeString):
 
 # Statistics
 frag_lens = [] # This will keep track of each copies fragment length for stats 
-noCopies = 0
+noCopies = 0     # This represents the number of times a sequence is NOT copied
 
+# **********************************************
+# Beginning of script
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -121,9 +123,14 @@ while loop:
         loop = False
     except:
         try:
-            file = os.getcwd() + '/' + file
-            genomeString = open(file, 'r').read()
-            loop = False
+            if getOS() == 'nt':
+                file = os.getcwd() + '/' + file
+                genomeString = open(file, 'r').read()
+                loop = False
+            else:
+                file = os.getcwd() + file
+                genomeString = open(file, 'r').read()
+                loop = False
         except:
             print("Try entering the entire file path. ", end = '')
 
@@ -223,12 +230,12 @@ doneQueue = collections.deque() #(2 ** int(cycles))
 workQueue.append(genomeString)
 PROCESSES = multiprocessing.cpu_count() - 1
 print(str(PROCESSES))
-#print(getTaqFallOff())
+#print(getTaqFallOff())  # Debugging
 print(forwardPrimer)
 print(backwardPrimer)
 #print(workQueue)     # Debugging
-print(LCSubStr(forwardPrimer, genomeString))
-print(LCSubStr(backwardPrimer, genomeString))
+print(LCSubStr(forwardPrimer, genomeString))    # Debugging
+print(LCSubStr(backwardPrimer, genomeString))   # Debugging
 
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
@@ -327,7 +334,10 @@ print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
 print_dist(frag_lens)
 
 file = os.getcwd()
-file = file + '\log.txt'
+if getOS() == 'nt':
+    file = file + '\log.txt'
+else:
+    file = file + '/log.txt'
 file2 = file + 't'
 print(file)
 f = open(file, 'w')
