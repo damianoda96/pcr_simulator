@@ -138,7 +138,7 @@ while loop:
 
 genomeString = preprocess(genomeString)
 
-print(genomeString)
+#print(genomeString)    # Debugging
 print("The length of your genome is:", len(genomeString))
 # assignment assumes 200 is default value for amplification, option to adjust
 # could be added.
@@ -176,10 +176,11 @@ while loop:
     if int(regionLength) < 200:
         #print out region in easy format
         try:
-            for i in range(int(regionBegin) - 1, int(regionLength) + int(regionBegin), 1):
+            print('Valid Range.')
+            #for i in range(int(regionBegin) - 1, int(regionLength) + int(regionBegin), 1):
                 #print(i)
-                print(genomeString[i], end = '')
-            print('\n')
+                #print(genomeString[i], end = '')
+            #print('\n')
         except:
             print('Invalid Range. The regions provided are outside of genome.')
         
@@ -242,7 +243,7 @@ while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
 
-            frag_lens.append(len(workQueue))
+            #frag_lens.append(len(workQueue))
             w = workQueue.popleft()
             lw = LCSubStr(forwardPrimer, w)
             x = workQueue.popleft()
@@ -257,9 +258,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     y = w[pos:r + pos]
                 doneQueue.append(w)
+                frag_lens.append(len(w))
                 doneQueue.append(y)
+                frag_lens.append(len(y))
             else:
                 doneQueue.append(w)
+                frag_lens.append(len(w))
                 doneQueue.append('')
                 noCopies += 1
                 print('Forward Primer could not bind.')
@@ -274,9 +278,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     z = x[pos - r:pos]
                 doneQueue.append(x)
+                frag_lens.append(len(x))
                 doneQueue.append(z)
+                frag_lens.append(len(z))
             else:
                 doneQueue.append(x)
+                frag_lens.append(len(x))
                 doneQueue.append('')
                 noCopies += 1
                 print('Backward Primer could not bind.')
@@ -297,9 +304,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     y = w[pos:r + pos]
                 workQueue.append(w)
+                frag_lens.append(len(w))
                 workQueue.append(y)
+                frag_lens.append(len(y))
             else:
                 workQueue.append(w)
+                frag_lens.append(len(w))
                 workQueue.append('')
                 noCopies += 1
                 print('Forward Primer could not bind.')
@@ -314,9 +324,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     z = x[pos - r:pos]
                 workQueue.append(x)
+                frag_lens.append(len(x))
                 workQueue.append(z)
+                frag_lens.append(len(z))
             else:
                 workQueue.append(x)
+                frag_lens.append(len(x))
                 workQueue.append('')
                 noCopies += 1
                 print('Backward Primer could not bind.')
@@ -326,9 +339,9 @@ while counter != int(cycles):    # This will run as many times as cycles
 #print(workQueue)   # debugging
 #print(doneQueue)   # debugging
 print('Num of no copies: ' + str(noCopies))
-print('Num of copies: ' + str(2 ** int(cycles) * 2 - 1))
+print('Num of copies: ' + str(2 ** int(cycles) * 2 - noCopies))
 
-print('Num of fragments: ' + str(noCopies + (2 ** int(cycles) * 2 - 1)))
+print('Num of fragments: ' + str(noCopies + (2 ** int(cycles) * 2 - noCopies)))
 print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
 
 print_dist(frag_lens)
