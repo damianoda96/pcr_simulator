@@ -216,7 +216,10 @@ while counter != int(cycles):    # This will run as many times as cycles
                 print('Forward Primer pos: ' + str(pos))
                 r = getTaqFallOff()
                 print('taq: ' + str(r))
-                y = w[pos:r + pos]
+                if pos + r > len(w):
+                    y = w[pos:]
+                else:
+                    y = w[pos:r + pos]
                 workQueue.append(w)
                 workQueue.append(y)
             else:
@@ -227,7 +230,10 @@ while counter != int(cycles):    # This will run as many times as cycles
                 print('Backward Primer pos: ' + str(pos))
                 r = getTaqFallOff()
                 print('taq: ' + str(r))
-                z = x[pos - r:pos]
+                if pos - r < 0:
+                    z = x[:pos]
+                else:
+                    z = x[pos - r:pos]
                 workQueue.append(x)
                 workQueue.append(z)
             else:
