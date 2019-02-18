@@ -51,6 +51,8 @@ def LCSubStr(X, Y):
                 LCSuff[i][j] = 0
     return result
 
+# Statistics
+noCopies = 0
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -191,6 +193,8 @@ while counter != int(cycles):    # This will run as many times as cycles
                 doneQueue.append(y)
             else:
                 doneQueue.append(w)
+                doneQueue.append('')
+                noCopies += 1
                 print('Forward Primer could not bind.')
             if lx >= 10:
                 pos = x.find(backwardPrimer)
@@ -206,6 +210,8 @@ while counter != int(cycles):    # This will run as many times as cycles
                 doneQueue.append(z)
             else:
                 doneQueue.append(x)
+                doneQueue.append('')
+                noCopies += 1
                 print('Backward Primer could not bind.')
     if counter % 2 == 1:
         while len(doneQueue) != 0:
@@ -226,6 +232,8 @@ while counter != int(cycles):    # This will run as many times as cycles
                 workQueue.append(y)
             else:
                 workQueue.append(w)
+                workQueue.append('')
+                noCopies += 1
                 print('Forward Primer could not bind.')
             if lx >= 10:
                 pos = x.find(backwardPrimer)
@@ -241,12 +249,16 @@ while counter != int(cycles):    # This will run as many times as cycles
                 workQueue.append(z)
             else:
                 workQueue.append(x)
+                workQueue.append('')
+                noCopies += 1
                 print('Backward Primer could not bind.')
     counter += 1
 
 #print(workQueue.qsize())    # Just for debugging
 #print(workQueue)   # debugging
 #print(doneQueue)   # debugging
+print('Num of no copies: ' + str(noCopies))
+print('Num of copies: ' + str(2 ** int(cycles) * 2 - 1))
 
 file = os.getcwd()
 file = file + '\log.txt'
