@@ -1,0 +1,10 @@
+Hello, running the below commands will allow you to run the matplotlib visualizations:
+
+(Tried on macOS)
+
+pip install matplotlib
+conda install python.app
+
+Then, run Project1.py with:
+
+pythonw Project1.py

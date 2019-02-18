@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# for visualization
+import matplotlib.pyplot as plt
+import numpy as np
+
 import multiprocessing
 import collections
 import time
@@ -62,6 +66,29 @@ def get_average_len(frag_lens): # to get the average len of dna fragments
 
     return average
 
+def print_dist(frag_lens): # for outputting distribution of dna fragments
+
+    # working out solution to visualize fragment distribution
+
+    labels = ['0 - 100', '101 - 200', '201 - 800']
+    nums = [0, 0, 0]
+
+    for i in frag_lens:
+        if i >= 0 and i <= 100:
+            nums[0] += 1
+        if i > 100 and i <= 200:
+            nums[1] += 1
+        if i > 200 and i <= 800:
+            nums[2] += 1
+
+    index = np.arange(len(labels))
+    plt.bar(index, nums)
+    plt.xlabel('ranges', fontsize=5)
+    plt.ylabel('fragments', fontsize=5)
+    plt.xticks(index, labels, fontsize=5, rotation=30)
+    plt.title('Distribution of DNA Fragment Lengths')
+    plt.show()
+
 
 def preprocess(genomeString):
     # Preprocessing of genomeString
@@ -80,8 +107,8 @@ def preprocess(genomeString):
 
 # Statistics
 frag_lens = [] # This will keep track of each copies fragment length for stats 
-
 noCopies = 0
+
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -296,6 +323,8 @@ print('Num of copies: ' + str(2 ** int(cycles) * 2 - 1))
 
 print('Num of fragments: ' + str(noCopies + (2 ** int(cycles) * 2 - 1)))
 print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
+
+print_dist(frag_lens)
 
 file = os.getcwd()
 file = file + '\log.txt'
