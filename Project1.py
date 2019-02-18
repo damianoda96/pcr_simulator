@@ -146,7 +146,7 @@ cycles = input('--> ')
 #os.system(clear)
 print('The file you are using is: ', file)
 print('The beginning region is:   ', regionBegin, genomeString[int(regionBegin) - 1])
-print('The region length is:      ', regionLength, genomeString[int(regionBegin) + int(regionLength) - 2])
+print('The region length is:      ', regionLength, genomeString[int(regionBegin) + int(regionLength)])
 print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
@@ -181,8 +181,8 @@ while counter != int(cycles):    # This will run as many times as cycles
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
                 print('Forward Primer pos: ' + str(pos))
-                r = 200 #getTaqFallOff()
-                #y = workQueue.popleft()
+                r = getTaqFallOff()
+                print('taq: ' + str(r))
                 y = w[pos:r + pos]
                 doneQueue.append(w)
                 doneQueue.append(y)
@@ -192,7 +192,8 @@ while counter != int(cycles):    # This will run as many times as cycles
                 pos = x.find(backwardPrimer)
                 pos = pos + lx
                 print('Backward Primer pos: ' + str(pos))
-                r = 200 #getTaqFallOff()
+                r = getTaqFallOff()
+                print('taq: ' + str(r))
                 z = x[pos - (r):pos]
                 doneQueue.append(x)
                 doneQueue.append(z)
@@ -207,8 +208,8 @@ while counter != int(cycles):    # This will run as many times as cycles
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
                 print('Forward Primer pos: ' + str(pos))
-                r = 200 #getTaqFallOff()
-                #y = workQueue.popleft()
+                r = getTaqFallOff()
+                print('taq: ' + str(r))
                 y = w[pos:r + pos]
                 workQueue.append(w)
                 workQueue.append(y)
@@ -218,7 +219,8 @@ while counter != int(cycles):    # This will run as many times as cycles
                 pos = x.find(backwardPrimer)
                 pos = pos + lx
                 print('Backward Primer pos: ' + str(pos))
-                r = 200 #getTaqFallOff()
+                r = getTaqFallOff()
+                print('taq: ' + str(r))
                 z = x[pos - (r):pos]
                 workQueue.append(x)
                 workQueue.append(z)
