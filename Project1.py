@@ -51,6 +51,18 @@ def LCSubStr(X, Y):
                 LCSuff[i][j] = 0
     return result
 
+def get_average_len(frag_lens): # to get the average len of dna fragments
+    
+    summation = 0
+
+    for i in frag_lens:
+        summation+=int(i)
+
+    average = summation/len(frag_lens)
+
+    return average
+
+
 def preprocess(genomeString):
     # Preprocessing of genomeString
     # Additonal proprocessing for flexibility in input types
@@ -67,6 +79,8 @@ def preprocess(genomeString):
 
 
 # Statistics
+frag_lens = [] # This will keep track of each copies fragment length for stats 
+
 noCopies = 0
 clear = getOS()
 os.system(clear)
@@ -175,6 +189,7 @@ input('--> ')
 # TODO:: Create control statement here
 
 
+
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
 doneQueue = collections.deque() #(2 ** int(cycles))
@@ -192,6 +207,8 @@ counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
+
+            frag_lens.append(len(workQueue))
             w = workQueue.popleft()
             lw = LCSubStr(forwardPrimer, w)
             x = workQueue.popleft()
@@ -231,6 +248,7 @@ while counter != int(cycles):    # This will run as many times as cycles
                 print('Backward Primer could not bind.')
     if counter % 2 == 1:
         while len(doneQueue) != 0:
+            frag_lens.append(len(doneQueue))
             w = doneQueue.popleft()
             lw = LCSubStr(forwardPrimer, w)
             x = doneQueue.popleft()
@@ -275,6 +293,9 @@ while counter != int(cycles):    # This will run as many times as cycles
 #print(doneQueue)   # debugging
 print('Num of no copies: ' + str(noCopies))
 print('Num of copies: ' + str(2 ** int(cycles) * 2 - 1))
+
+print('Num of fragments: ' + str(noCopies + (2 ** int(cycles) * 2 - 1)))
+print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
 
 file = os.getcwd()
 file = file + '\log.txt'
