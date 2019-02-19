@@ -22,6 +22,8 @@ def getOS():
     else:
         return 'clear'
 
+# Credit: https://www.geeksforgeeks.org/longest-common-substring-dp-29/
+# This function is needed for matching up primers to sequences before copying
 def LCSubStr(X, Y): 
     m = len(X)
     n = len(Y)
