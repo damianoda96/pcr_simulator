@@ -68,26 +68,99 @@ def get_average_len(frag_lens): # to get the average len of dna fragments
 
     return average
 
+def get_max_val(frag_lens): # helper func to get max value
+
+    max_val = 0
+
+    for i in range(len(frag_lens)):
+        if frag_lens[i] > max_val:
+            max_val = frag_lens[i]
+
+    return max_val
+
+def round_max(max_val):
+
+    import math
+
+    digits = int(math.log10(max_val)) + 1 # for getting # of digits in an integer
+
+    rounded_max_val = 0
+
+    digit_str = str(max_val)
+    rounded_max_val_str = ""
+
+    # This is way too complicated but it works..
+
+    if digits > 1:
+        if int(digit_str[0]) != 9:
+            if int(digit_str[1]) >= 5:
+                rounded_max_val_str += str(int(digit_str[0]) + 1)
+
+                for i in range(len(digit_str)):
+                    if i > 0:
+                        rounded_max_val_str += '0'
+
+            else:
+                rounded_max_val_str += digit_str[0]
+                rounded_max_val_str += '5'
+
+                for i in range(len(digit_str)):
+                    if i > 1:
+                        rounded_max_val_str += '0'
+
+        else:
+            for i in range(len(digit_str)):
+                if i > 0:
+                    rounded_max_val_str += '0'
+                else:
+                    rounded_max_val_str += '1'
+
+            rounded_max_val_str += '0'
+
+        rounded_max_val = int(rounded_max_val_str)
+
+    else:
+        rounded_max_val = 10
+
+    return rounded_max_val
+
+
+
 def print_dist(frag_lens): # for outputting distribution of dna fragments
+
+    import math # to help with rounding
 
     # working out solution to visualize fragment distribution
 
-    labels = ['0 - 100', '101 - 200', '201 - 800']
-    nums = [0, 0, 0]
+    labels = [] # will need to be dynamic   
+    nums = [] # will need to give us 10 bars in bargraph, no matter the size
 
-    for i in frag_lens:
-        if i > 0 and i <= 100:
-            nums[0] += 1
-        if i > 100 and i <= 200:
-            nums[1] += 1
-        if i > 200 and i <= 800:
-            nums[2] += 1
+    # get largest value in frag_lens and round it up to nearest even hundreth/thousandth
+
+    rounded_max_val = round_max(get_max_val(frag_lens))
+
+    interval = int(rounded_max_val/100)
+
+    for i in range(100):
+        nums.append(0) # just set all elements needed at zero
+
+        if i < 1:
+            string = "1 - %s" % (interval*(i+1))
+            labels.append(string)
+        else:
+            string = "%s - %s" % (interval*(i),interval*(i+1))
+            labels.append(string)
+
+    for i in range(100):
+        for j in frag_lens:
+            if j > interval*i and j <= interval*(i+1):
+                nums[i] += 1
 
     index = np.arange(len(labels))
     plt.bar(index, nums)
-    plt.xlabel('ranges', fontsize=5)
-    plt.ylabel('fragments', fontsize=5)
-    plt.xticks(index, labels, fontsize=5, rotation=30)
+    plt.xlabel('Fragment Sizes', fontsize=7)
+    plt.ylabel('# of Fragments', fontsize=7)
+    plt.xticks(index, labels, fontsize=4, rotation=30)
     plt.title('Distribution of DNA Fragment Lengths')
     plt.show()
 
@@ -109,10 +182,8 @@ def preprocess(genomeString):
 
 # Statistics
 frag_lens = [] # This will keep track of each copies fragment length for stats 
-noCopies = 0     # This represents the number of times a sequence is NOT copied
+noCopies = 0
 
-# **********************************************
-# Beginning of script
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -125,14 +196,9 @@ while loop:
         loop = False
     except:
         try:
-            if getOS() == 'nt':
-                file = os.getcwd() + '/' + file
-                genomeString = open(file, 'r').read()
-                loop = False
-            else:
-                file = os.getcwd() + file
-                genomeString = open(file, 'r').read()
-                loop = False
+            file = os.getcwd() + '/' + file
+            genomeString = open(file, 'r').read()
+            loop = False
         except:
             print("Try entering the entire file path. ", end = '')
 
@@ -140,7 +206,7 @@ while loop:
 
 genomeString = preprocess(genomeString)
 
-#print(genomeString)    # Debugging
+print(genomeString)
 print("The length of your genome is:", len(genomeString))
 # assignment assumes 200 is default value for amplification, option to adjust
 # could be added.
@@ -178,11 +244,10 @@ while loop:
     if int(regionLength) < 200:
         #print out region in easy format
         try:
-            print('Valid Range.')
-            #for i in range(int(regionBegin) - 1, int(regionLength) + int(regionBegin), 1):
+            for i in range(int(regionBegin) - 1, int(regionLength) + int(regionBegin), 1):
                 #print(i)
-                #print(genomeString[i], end = '')
-            #print('\n')
+                print(genomeString[i], end = '')
+            print('\n')
         except:
             print('Invalid Range. The regions provided are outside of genome.')
         
@@ -225,7 +290,18 @@ input('--> ')
 
 # TODO:: Create control statement here
 
-
+# Create the queues
+workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
+doneQueue = collections.deque() #(2 ** int(cycles))
+workQueue.append(genomeString)
+PROCESSES = multiprocessing.cpu_count() - 1
+print(str(PROCESSES))
+#print(getTaqFallOff())
+print(forwardPrimer)
+print(backwardPrimer)
+#print(workQueue)     # Debugging
+print(LCSubStr(forwardPrimer, genomeString))
+print(LCSubStr(backwardPrimer, genomeString))
 
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
@@ -251,12 +327,14 @@ while counter != int(cycles):    # This will run as many times as cycles
 
             #frag_lens.append(len(workQueue))
             w = workQueue.popleft()
-            frag_lens.remove(len(w))
+            val = frag_lens.count(len(w))
+            if val != 0:
+                frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = workQueue.popleft()
-            val = frag_lens.index(len(x))
-            if val:
-            	frag_lens.remove(len(x))
+            val = frag_lens.count(len(x))
+            if val != 0:
+                frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -301,10 +379,14 @@ while counter != int(cycles):    # This will run as many times as cycles
         while len(doneQueue) != 0:
             frag_lens.append(len(doneQueue))
             w = doneQueue.popleft()
-            frag_lens.remove(len(w))
+            val = frag_lens.count(len(w))
+            if val != 0:
+                frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = doneQueue.popleft()
-            frag_lens.remove(len(x))
+            val = frag_lens.count(len(x))
+            if val != 0:
+                frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -378,4 +460,3 @@ f2.close()
 
 #def oneCycle():
 # if even, work queue -> done queue, if odd, done queue -> work queue
-
