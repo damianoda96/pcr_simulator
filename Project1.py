@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+# for visualization
+import matplotlib.pyplot as plt
+import numpy as np
+
 import multiprocessing
 import collections
 import time
@@ -18,6 +22,8 @@ def getOS():
     else:
         return 'clear'
 
+# Credit: https://www.geeksforgeeks.org/longest-common-substring-dp-29/
+# This function is needed for matching up primers to sequences before copying
 def LCSubStr(X, Y): 
     m = len(X)
     n = len(Y)
@@ -51,8 +57,133 @@ def LCSubStr(X, Y):
                 LCSuff[i][j] = 0
     return result
 
+def get_average_len(frag_lens): # to get the average len of dna fragments
+    
+    summation = 0
+
+    for i in frag_lens:
+        summation+=int(i)
+
+    average = summation/len(frag_lens)
+
+    return average
+
+def get_max_val(frag_lens): # helper func to get max value
+
+    max_val = 0
+
+    for i in range(len(frag_lens)):
+        if frag_lens[i] > max_val:
+            max_val = frag_lens[i]
+
+    return max_val
+
+def round_max(max_val):
+
+    import math
+
+    digits = int(math.log10(max_val)) + 1 # for getting # of digits in an integer
+
+    rounded_max_val = 0
+
+    digit_str = str(max_val)
+    rounded_max_val_str = ""
+
+    # This is way too complicated but it works..
+
+    if digits > 1:
+        if int(digit_str[0]) != 9:
+            if int(digit_str[1]) >= 5:
+                rounded_max_val_str += str(int(digit_str[0]) + 1)
+
+                for i in range(len(digit_str)):
+                    if i > 0:
+                        rounded_max_val_str += '0'
+
+            else:
+                rounded_max_val_str += digit_str[0]
+                rounded_max_val_str += '5'
+
+                for i in range(len(digit_str)):
+                    if i > 1:
+                        rounded_max_val_str += '0'
+
+        else:
+            for i in range(len(digit_str)):
+                if i > 0:
+                    rounded_max_val_str += '0'
+                else:
+                    rounded_max_val_str += '1'
+
+            rounded_max_val_str += '0'
+
+        rounded_max_val = int(rounded_max_val_str)
+
+    else:
+        rounded_max_val = 10
+
+    return rounded_max_val
+
+
+
+def print_dist(frag_lens): # for outputting distribution of dna fragments
+
+    import math # to help with rounding
+
+    # working out solution to visualize fragment distribution
+
+    labels = [] # will need to be dynamic   
+    nums = [] # will need to give us 10 bars in bargraph, no matter the size
+
+    # get largest value in frag_lens and round it up to nearest even hundreth/thousandth
+
+    rounded_max_val = round_max(get_max_val(frag_lens))
+
+    interval = int(rounded_max_val/100)
+
+    for i in range(100):
+        nums.append(0) # just set all elements needed at zero
+
+        if i < 1:
+            string = "1 - %s" % (interval*(i+1))
+            labels.append(string)
+        else:
+            string = "%s - %s" % (interval*(i),interval*(i+1))
+            labels.append(string)
+
+    for i in range(100):
+        for j in frag_lens:
+            if j > interval*i and j <= interval*(i+1):
+                nums[i] += 1
+
+    index = np.arange(len(labels))
+    plt.bar(index, nums)
+    plt.xlabel('Fragment Sizes', fontsize=7)
+    plt.ylabel('# of Fragments', fontsize=7)
+    plt.xticks(index, labels, fontsize=4, rotation=30)
+    plt.title('Distribution of DNA Fragment Lengths')
+    plt.show()
+
+
+def preprocess(genomeString):
+    # Preprocessing of genomeString
+    # Additonal proprocessing for flexibility in input types
+    for i in range(len(genomeString)):  # for numbered columns
+        if genomeString[i].isdigit():
+            genomeString = genomeString.replace(genomeString[i], ' ')
+    genomeString = genomeString.replace('\n', '')
+    genomeString = genomeString.replace('\t', '')
+    genomeString = genomeString.replace(' ', '')
+    genomeString = genomeString.upper() # if lowercase, make uppercase
+    #genomeString = genomeString[int(regionBegin) - 1:]
+
+    return genomeString
+
+
 # Statistics
+frag_lens = [] # This will keep track of each copies fragment length for stats 
 noCopies = 0
+
 clear = getOS()
 os.system(clear)
 print(os.getcwd())
@@ -70,6 +201,10 @@ while loop:
             loop = False
         except:
             print("Try entering the entire file path. ", end = '')
+
+# preprocessing for genome string:
+
+genomeString = preprocess(genomeString)
 
 print(genomeString)
 print("The length of your genome is:", len(genomeString))
@@ -129,7 +264,7 @@ while loop:
     else:
         print('Are you sure? ')
         ans = input('--> ')
-        if ans == 'y':
+        if ans.lower() == 'y' or ans.lower() == 'yes':
             loop = False
             
 
@@ -152,12 +287,8 @@ print('The region length is:      ', regionLength, genomeString[int(regionBegin)
 print('The number of cycles is:   ', cycles)
 print('\nIs this acceptable?')
 input('--> ')
-# Create control statement here
 
-# Preprocessing of genomeString
-genomeString = genomeString.replace('\n', '')
-genomeString = genomeString.replace('\t', '')
-#genomeString = genomeString[int(regionBegin) - 1:]
+# TODO:: Create control statement here
 
 # Create the queues
 workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
@@ -172,13 +303,38 @@ print(backwardPrimer)
 print(LCSubStr(forwardPrimer, genomeString))
 print(LCSubStr(backwardPrimer, genomeString))
 
+# Create the queues
+workQueue = collections.deque([genomeString]) #(2 ** int(cycles))
+doneQueue = collections.deque() #(2 ** int(cycles))
+workQueue.append(genomeString)
+# Load freq_lens with len of first two sequences
+frag_lens.append(len(genomeString))
+frag_lens.append(len(genomeString))
+
+PROCESSES = multiprocessing.cpu_count() - 1
+print(str(PROCESSES))
+#print(getTaqFallOff())  # Debugging
+print(forwardPrimer)
+print(backwardPrimer)
+#print(workQueue)     # Debugging
+print(LCSubStr(forwardPrimer, genomeString))    # Debugging
+print(LCSubStr(backwardPrimer, genomeString))   # Debugging
+
 counter = 0
 while counter != int(cycles):    # This will run as many times as cycles
     if counter % 2 == 0:         # This tests for which queue to work from
         while len(workQueue) != 0:
+
+            #frag_lens.append(len(workQueue))
             w = workQueue.popleft()
+            val = frag_lens.count(len(w))
+            if val != 0:
+                frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = workQueue.popleft()
+            val = frag_lens.count(len(x))
+            if val != 0:
+                frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -190,9 +346,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     y = w[pos:r + pos]
                 doneQueue.append(w)
+                frag_lens.append(len(w))
                 doneQueue.append(y)
+                frag_lens.append(len(y))
             else:
                 doneQueue.append(w)
+                frag_lens.append(len(w))
                 doneQueue.append('')
                 noCopies += 1
                 print('Forward Primer could not bind.')
@@ -207,17 +366,27 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     z = x[pos - r:pos]
                 doneQueue.append(x)
+                frag_lens.append(len(x))
                 doneQueue.append(z)
+                frag_lens.append(len(z))
             else:
                 doneQueue.append(x)
+                frag_lens.append(len(x))
                 doneQueue.append('')
                 noCopies += 1
                 print('Backward Primer could not bind.')
     if counter % 2 == 1:
         while len(doneQueue) != 0:
+            frag_lens.append(len(doneQueue))
             w = doneQueue.popleft()
+            val = frag_lens.count(len(w))
+            if val != 0:
+                frag_lens.remove(len(w))
             lw = LCSubStr(forwardPrimer, w)
             x = doneQueue.popleft()
+            val = frag_lens.count(len(x))
+            if val != 0:
+                frag_lens.remove(len(x))
             lx = LCSubStr(backwardPrimer, x)
             if lw >= 10:
                 pos = w.find(forwardPrimer[len(forwardPrimer) - lw:])
@@ -229,9 +398,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     y = w[pos:r + pos]
                 workQueue.append(w)
+                frag_lens.append(len(w))
                 workQueue.append(y)
+                frag_lens.append(len(y))
             else:
                 workQueue.append(w)
+                frag_lens.append(len(w))
                 workQueue.append('')
                 noCopies += 1
                 print('Forward Primer could not bind.')
@@ -246,9 +418,12 @@ while counter != int(cycles):    # This will run as many times as cycles
                 else:
                     z = x[pos - r:pos]
                 workQueue.append(x)
+                frag_lens.append(len(x))
                 workQueue.append(z)
+                frag_lens.append(len(z))
             else:
                 workQueue.append(x)
+                frag_lens.append(len(x))
                 workQueue.append('')
                 noCopies += 1
                 print('Backward Primer could not bind.')
@@ -258,10 +433,18 @@ while counter != int(cycles):    # This will run as many times as cycles
 #print(workQueue)   # debugging
 #print(doneQueue)   # debugging
 print('Num of no copies: ' + str(noCopies))
-print('Num of copies: ' + str(2 ** int(cycles) * 2 - 1))
+print('Num of copies: ' + str(2 ** int(cycles) * 2 - noCopies))
+
+print('Num of fragments: ' + str(2 ** int(cycles) * 2 - noCopies))
+print('Average fragment len: ' + str(int(get_average_len(frag_lens))))
+
+print_dist(frag_lens)
 
 file = os.getcwd()
-file = file + '\log.txt'
+if getOS() == 'nt':
+    file = file + '\log.txt'
+else:
+    file = file + '/log.txt'
 file2 = file + 't'
 print(file)
 f = open(file, 'w')
@@ -277,4 +460,3 @@ f2.close()
 
 #def oneCycle():
 # if even, work queue -> done queue, if odd, done queue -> work queue
-

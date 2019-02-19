@@ -127,7 +127,7 @@ while loop:
     else:
         print('Are you sure? ')
         ans = input('--> ')
-        if ans == 'y':
+        if ans == 'y' or ans == 'yes':
             loop = False
             
 
